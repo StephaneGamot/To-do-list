@@ -16,22 +16,26 @@ const toggleDarkMode = () => {
 const loadDarkModePreference = () => {
   const darkModeSetting = localStorage.getItem("darkMode");
   const container = document.querySelector(".container");
-  if (darkModeSetting === "on") {
-    container.classList.add("dark-mode");
+
+  if (darkModeSetting) {
+    if (darkModeSetting === "on") {
+      container.classList.add("dark-mode");
+    } else {
+      container.classList.remove("dark-mode");
+    }
   } else {
-    container.classList.remove("dark-mode");
+   
+    container.classList.add("dark-mode");
+    localStorage.setItem("darkMode", "on"); 
   }
 };
+
 
 
 document.querySelector("#dark-mode-toggle").addEventListener("click", toggleDarkMode);
 
 
 let todos = [];
-
-const showMessage = (message) => {
-	alert(message);
-};
 
 const loadTodos = () => {
 	try {
@@ -137,7 +141,7 @@ const createTodoEditElement = (todo, index) => {
 		event.stopPropagation();
 		toggleEditMode(index);
 	});
-  buttonSave.addEventListener('click', (event) => {
+  buttonSave.addEventListener('click', () => {
     editTodo(index, input.value); 
   });
 	li.append(input, buttonSave, buttonCancel);
@@ -157,7 +161,6 @@ const addTodo = (text) => {
 	});
 	displayTodo();
 	saveTodos();
-	showMessage("Tâche ajoutée avec succès.");
 };
 
 const saveTodos = () => {
@@ -172,7 +175,6 @@ const deleteTodo = (index) => {
 	todos.splice(index, 1);
 	displayTodo();
 	saveTodos();
-	showMessage("Tâche supprimée.");
 };
 
 const toggleTodo = (index) => {
@@ -182,21 +184,22 @@ const toggleTodo = (index) => {
 };
 
 const toggleEditMode = (index) => {
-	todos[index].editMode = !todos[index].editMode;
-	displayTodo();
+  todos.forEach((todo, i) => {
+    todo.editMode = i === index ? !todo.editMode : false;
+  });
+  displayTodo();
 };
 
-const editTodo = (index, newTextInput) => {
-	const value = newTextInput.value.trim();
-	if (!value) {
-		alert("La tâche ne peut pas être vide.");
-		return;
-	}
-  todos[index].text = newTextInput;
+
+const editTodo = (index, newText) => {
+  if (!newText.trim()) {
+    alert("La tâche ne peut pas être vide.");
+    return;
+  }
+  todos[index].text = newText;
   todos[index].editMode = false;
-	displayTodo();
-	saveTodos();
-	showMessage("Tâche mise à jour.");
+  displayTodo();
+  saveTodos();
 };
 
 displayTodo();
